@@ -3,7 +3,7 @@
 #include "limits.h"
 
 static inline Boolean valid_base(GN_BASE base){
-    return base == BASE10 || base == BASE8 || base == BASE16 || base == ANY_BASE;
+    return base == GN_BASE10 || base == GN_BASE8 || base == GN_BASE16 || base == GN_ANY_BASE;
 }
 
 #define handle_exception(message) do{ msg = message; goto exception; }while(0);
@@ -19,9 +19,9 @@ static long to_long(const char* num, GN_FLAG flags, GN_BASE base){
         handle_exception_errno("Exception during parsing string.")
     if(!valid_base(base)) 
         handle_exception("Invalid base.");
-    if(flags & NUM_POSTIVE && !(value >= 0))
+    if(flags & GN_NUM_POSTIVE && !(value >= 0))
         handle_exception("Invalid number, it should be postive."); 
-    if(flags & NUM_NOT_ZERO && !(value != 0)) 
+    if(flags & GN_NUM_NOT_ZERO && !(value != 0)) 
         handle_exception("Invalid number, it shout not be zero.");
 
     return value; 
