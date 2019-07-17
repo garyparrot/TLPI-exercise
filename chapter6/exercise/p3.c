@@ -72,23 +72,30 @@ int unsetenv(const char *name){
     // if we didn't found a match, test if there is a vacant waiting for fill.
     //      if so, fill it, vacant the no match entry, update lastVacant pointer to next vacant in linear time.
     // Time complexity might be O(n)
-    char** lastVacant = NULL;
+    int lastVacant = -1;
     for(int i = 0; environ[i] != NULL; i++)
         if(match_entry(environ[i], name, len)){
-            if(lastVacant == NULL) lastVacant = &environ[i];
+            if(lastVacant == -1) lastVacant = i;
             environ[i] = NULL;
         }else{
             // no match, test if there is other vacant wait for us to fill.
-            if(lastVacant != NULL){
-                *lastVacant = environ[i]; /* steal its refernece */
+            if(lastVacant != -1){
+                environ[lastVacant] = environ[i];
                 environ[i] = NULL;
                 // update vacant pointer in linear time.
-                while(lastVacant != &environ[i] && environ[i] != NULL) lastVacant++;
+                while(lastVacant <= i) 
+                    if(environ[lastVacant] == NULL)
+                        break;
+                    else
+                        lastVacant++;
                 // no vacant entry found, set lastVacant to NULL.
-                if(lastVacant == &environ[i]) lastVacant = NULL;
+                if(lastVacant == i + 1)
+                {
+                    lastVacant = -1;
+                }
+                
             }
         }
-
     return 0;
 }
 #undef match_entry
@@ -105,7 +112,8 @@ int main(int argc, const char *argv[]){
 
     setenv("USER", "Alex", 0);
     setenv("USER2", "Wolf", 0);
-    setenv("USER", "Joe", 0);
+    setenv("USER", "JoeZ", 0);
+    setenv("USER3", "AAA", 0);
     list_env();
 
     setenv("USER", "Joe", 1);
