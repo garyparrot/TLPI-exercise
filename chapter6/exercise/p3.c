@@ -23,14 +23,12 @@
 extern char** environ;
 
 int setenv(const char* name, const char* value, int overwrite){
-    // test if the name of variable is NULL
-    if(name == NULL) return errno = EINVAL, -1;
+    // test if the name is valid
+    if(name == NULL || name[0] == '\0' || strchr(name, '=') != NULL)
+        return errno = EINVAL, -1;
 
-    int len1;
+    int len1 = strlen(name);
     int len2 = strlen(value); 
-    // test if the name contain '=' character or its length is 0.
-    for(len1 = 0;name[len1] != '\0' && name[len1] != '=';len1++);
-    if(len1 == 0 || name[len1] == '=') return errno = EINVAL, -1;
 
     // this macro indicate that the environ equal to specified name 
 #define match_entry(envstr, name, len) (strncmp(envstr, name, len) == 0 && envstr[len] == '=')
@@ -55,7 +53,7 @@ int setenv(const char* name, const char* value, int overwrite){
     if(environ[m] == NULL){
         environ[m] = env;
         environ[++m] = NULL;
-    }else{ /* we found a match here, and we have to overwrite it */
+    }else{ /* we found a match in the previous while loop , and we have to overwrite it */
         environ[m] = env;
     }
 
