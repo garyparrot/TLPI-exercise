@@ -19,7 +19,6 @@ struct meta_alloc{
 
 struct meta_alloc mhead; /* head of occupied  mem linking list */
 struct meta_alloc ahead; /* head of available mem linking list */
-void* program_break; /* record current program break */
 
 struct meta_alloc* get_meta(void* space){ return space - sizeof(struct meta_alloc); }
 void*              get_space(const struct meta_alloc *meta){ return (void*)meta + sizeof(struct meta_alloc); }
@@ -41,7 +40,6 @@ struct meta_alloc* _quest_alloc(size_t size, struct meta_alloc* insert){
     // test if failed
     if((void*)sz == (void*)-1) { return (void*) -1; }
     // update program break, this is useful for free function
-    program_break = (void*)sz + sz->size;
 
     // make the new metadata as the successor of specified pointer.
     sz->size = size;
@@ -116,6 +114,7 @@ void free(void* ptr){
         suc->next = NULL;
         suc->prev = NULL;
 
+
         meta->size += suc->size + sizeof(struct meta_alloc);
     }
 
@@ -134,7 +133,7 @@ void free(void* ptr){
 
 void print(struct meta_alloc* head){
     for(struct meta_alloc* s = head->next; s != head; s = s->next){
-        printf("Meta prev=%10p next=%10p size=%5ld\n", s->prev, s->next, s->size);
+        printf("Meta pos=%10p prev=%10p next=%10p size=%5ld\n",s, s->prev, s->next, s->size);
     }
 }
 
