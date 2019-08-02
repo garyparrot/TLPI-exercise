@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "search_tree.h"
 
 /* Return errno if failed, zero if succeed */
@@ -14,7 +15,7 @@ int initialize(struct tree *t){
 /* return -1 on conflict */
 /* otherwise return a postive value indicate the erron */
 int add(struct tree *t, const char *key, void *value){
-    int s;
+    int s, ret = 0;
 
     if((s = pthread_mutex_lock(&(t->mutex)))) return s;
 
@@ -28,8 +29,9 @@ int add(struct tree *t, const char *key, void *value){
             p = &(n->rnode),n = n->rnode;
         else if(cmp < 0)
             p = &(n->lnode),n = n->lnode;
-        else
-            return -1;
+        else{
+            ret = -1; goto ret;
+        }
     }
 
     /* We found it */
@@ -40,13 +42,13 @@ int add(struct tree *t, const char *key, void *value){
     (*p)->lnode = NULL;
     (*p)->rnode = NULL;
 
+ret:
     if((s = pthread_mutex_unlock(&(t->mutex)))) return s;
-
-    return 0;
+    return ret;
 }
 
 int delete(struct tree *t, const char *key){
-    int s;
+    int s , ret = 0;
 
     if((s = pthread_mutex_lock(&(t->mutex)))) return s;
 
@@ -82,18 +84,18 @@ int delete(struct tree *t, const char *key){
                 free(n); *p = rep;
             }
 
-            return 0;
+            goto ret;
         }
     }
+    ret = -1;
 
+ret:
     if((s = pthread_mutex_unlock(&(t->mutex)))) return s;
-
-    /* No match found*/
-    return -1;
+    return ret;
 }
 
 int lookup(struct tree* t,const char *key, void** value){
-    int s;
+    int s, ret = -1;
 
     if((s = pthread_mutex_lock(&(t->mutex)))) return s;
 
@@ -104,10 +106,11 @@ int lookup(struct tree* t,const char *key, void** value){
         cmp = strcmp(n->key, key);
         if(cmp > 0) { n = n->rnode; continue; }
         if(cmp < 0) { n = n->lnode; continue; }
-        if(cmp == 0){ *value = (n->value); return 0; }
+        if(cmp == 0){ *value = (n->value); ret = 0; goto ret; }
     }
 
+    /* No match found */
+ret:
     if((s = pthread_mutex_unlock(&(t->mutex)))) return s;
-
-    return -1;
+    return ret;
 }

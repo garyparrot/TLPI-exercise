@@ -37,15 +37,6 @@ const char* keys[] = {
     "Now I need some changes in my life",
     "Now I need to move on in life",
     "Now is time to say goodbye",
-    "Goodbye goodbye to everybody",
-    "Goodbye to the people who hated on me",
-    "Goodbye the people who loved, me",
-    "Goodbye to the people who trusted me",
-    "Goodbye goodbye to everybody",
-    "Goodbye to the people who hated on me",
-    "Goodbye the people who loved, me",
-    "Goodbye to the people who trusted me",
-    "Goodbye goodbye to everybody",
     "I'm thinking deeply, right, now",
     "My life without you is like, ow",
     "I don't know how to explain, this",
@@ -54,30 +45,22 @@ const char* keys[] = {
     "I'm not the person",
     "I used to be",
     "Now I want to leave This city",
-    "This bullshit is not gonna happen again",
-    "Goodbye to the people who hated on me",
-    "Goodbye the people who loved, me",
-    "Goodbye to the people who trusted me",
-    "Goodbye goodbye to everybody",
-    "Goodbye to the people who hated on me",
-    "Goodbye the people who loved, me",
-    "Goodbye to the people who trusted me",
-    "Goodbye goodbye to everybody"
+    "This bullshit is not gonna happen again"
 };
 const size_t keylen = sizeof(keys) / sizeof(const char*);
 
 void* thread1(void *args){
     // This thread keep query stuff
     int s;
-    for(int i = 0;i < keylen;i++){
-        void* val;
-        if((s = lookup(&t, keys[i], &val)) && s > 0)
-            errExitEN(s, "lookup");
-        if(s == -1)
-            printf("Query stuff %s, not found. \n", keys[i]);
-        if(s == 0 && strlen(keys[i]) != (long)val)
-            printf("Value inconsist %s, value is %ld exptect %ld.", keys[i], (long)val, strlen(keys[i]));
-        printf("ok\n");
+    while(1) {
+        for(int i = 0;i < keylen;i++){
+            const char* val;
+            if((s = lookup(&t, keys[i], (void**)&val)) && s > 0)
+                errExitEN(s, "lookup");
+            // if(s == -1) printf("Query stuff %s, not found. \n", keys[i]);
+            if(s == 0 && strcmp(val, keys[i]) != 0)
+                printf("Value inconsist %s\n Source: %s\n Exptect: %s\n", keys[i], val, keys[i]);
+        }
     }
 
     return NULL;
@@ -90,7 +73,7 @@ void* thread2(void *args){
         for(int i = 0; i < keylen; i++){
             if((s = delete(&t, keys[i])) && s > 0)
                 errExitEN(s, "delete");
-            if((s = add(&t, keys[i], (void**)strlen(keys[i]))) && s > 0)
+            if((s = add(&t, keys[i], (void**)keys[i])) && s > 0)
                 errExitEN(s, "add");
         }
     }
@@ -106,7 +89,7 @@ int main(int argc, const char *argv[]){
     pthread_t t1,t2;
 
     for(int i = 0;i < keylen; i++)
-        if((s = add(&t, keys[i], (void**)strlen(keys[i]))) && s > 0)
+        if((s = add(&t, keys[i], (void**)keys[i])) && s > 0)
             errExitEN(s, "add");
 
     if((s = pthread_create(&t1, NULL, thread1, NULL))) errExitEN(s, "thread1 pthread_create");
