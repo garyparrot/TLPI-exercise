@@ -1,0 +1,7 @@
+VER_1 {
+    global:
+        func1;
+        func2;
+    local:
+        *;
+};
