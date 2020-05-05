@@ -122,7 +122,6 @@ struct sockaddr {
   * 其他 Client 應用透過 ``connect()`` 連入，此時需指定對方的 Socket 地址
   * Server 透過 ``accept()`` 來接受連線，預設 ``accept()`` 是堵塞的
 
-![1582732671164](README.assets/1582732671164.png)
 
 ### 主動與被動
 
@@ -179,7 +178,6 @@ int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 
 Socket 的兩個端點是雙向通訊的通道。Kernel 中間會設定 Buffer 儲存資料
 
-![1582738669988](README.assets/1582738669988.png)
 
 * I/O 透過 ``read()`` 和 ``write()`` 。
 * Socket 可以使用 ``close()`` 關閉 Socket。
@@ -203,7 +201,6 @@ Socket 的兩個端點是雙向通訊的通道。Kernel 中間會設定 Buffer �
 5. 接收透過 ``recvfrom()`` 
 6. 不使用時要 ``close()``
 
-![1582740734453](README.assets/1582740734453.png)
 
 ### 交換 Datagram: recvfrom() 和 sendto()
 

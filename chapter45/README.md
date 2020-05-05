@@ -93,7 +93,6 @@ while(msqid = msgget(key, IPC_CREAT | IPC_EXCL | MQ_PERMS)) == -1) {
 
 Kernel 內部會給每個 IPC 方法紀錄一個 ipc_ids struct，他描述著對應 IPC 方法的所有 Global Information。其內容包含一個動態變化的指標陣列 entries。每個項目都指向某 Object Instance。
 
-![1582270995561](README.assets/1582270995561.png)
 
 這整個過程中， seq 扮演很重要的角色，新建立的 IPC 資源會得到目前的 seq 值，之後替他加1。這樣就可以確保刪除後新建立的 Descriptor 會不一樣。當系統建立了 65535 個 IPC Resource 後可能會出現重複的 Descriptor，但是這機會非常小
 

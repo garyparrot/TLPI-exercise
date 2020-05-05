@@ -87,7 +87,6 @@ graph LR;
 
 每個 IPC 都需要一個 Name 來識別各個 Object。
 
-![1581854601694](README.assets/1581854601694.png)
 
 * 數據傳輸工具是 Stream 導向的，而  Message 是消息導向的，依照你的使用情境選擇好的方法
 * SystemV / POSIX Message Queue 提供一個 feature，可以給訊息優先等級。
@@ -128,7 +127,6 @@ System V IPC 工具的設計架構獨立於 UNIX I/O 模型，這導致他的用
 * 如果要給文件加鎖，首先你必須要先打開他(即持有他的 File descriptor
 * Internet Domain Socket 的連結是沒有限制的，你可能需要在 Application 實作相關的 Access Control。
 
-![1581860156572](README.assets/1581860156572.png)
 
 #### 持久性
 
